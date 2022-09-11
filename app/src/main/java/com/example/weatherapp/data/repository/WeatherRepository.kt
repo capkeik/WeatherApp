@@ -10,7 +10,7 @@ class WeatherRepository {
 
     suspend fun getWeatherList(lat: Double, lon: Double, count: Int): List<CityInfo> {
         val oldList = api.weatherApi.getWeatherList(lat, lon, count)
-        return List(10) {
+        return List(20) {
             mapper(oldList.list[it])
         }
     }

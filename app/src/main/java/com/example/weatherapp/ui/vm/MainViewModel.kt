@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherapp.data.entity.CityInfo
 import com.example.weatherapp.data.repository.WeatherRepository
 import kotlinx.coroutines.launch
@@ -14,6 +13,11 @@ class MainViewModel: ViewModel() {
     private val weatherRepository = WeatherRepository()
     private val _cityList = listOf<CityInfo>().toMutableStateList()
     private val _searchQuery = mutableStateOf("")
+    private val _foundCity = mutableStateOf(false)
+    val foundCity: Boolean
+        get() = _foundCity.value
+
+    val cityToGo = 0
 
     val searchQuery: String
         get() = _searchQuery.value
@@ -24,34 +28,35 @@ class MainViewModel: ViewModel() {
     private val lon = 49.1221
     var res = mutableStateOf("Nihuya")
     fun updateCityList() {
-        Log.e("dmsk", "mdkasnfl")
-        viewModelScope.launch {
-            weatherRepository.getWeatherList(
-                lat,
-                lon,
-                10
-            ).forEach {
-                _cityList.add(it)
+        if (cityList.isEmpty()) {
+            viewModelScope.launch {
+                weatherRepository.getWeatherList(
+                        lat,
+                        lon,
+                        20
+                ).forEach {
+                    _cityList.add(it)
+                }
             }
         }
     }
 
     fun searchCity() {
-        viewModelScope.launch {
-            res.value = try {
-                Log.e("dmsk", "fmdsokan")
-                val city = weatherRepository.getWeather(searchQuery)
-                Log.e("dmsk", city.toString())
+        try {
+            viewModelScope.launch {
 
-                city.name + " " + city.main.temp.toString()
-            } catch (e: Exception) {
-                "Failed"
+                _foundCity.value = true
             }
-
+        } catch(e: Exception) {
+            _foundCity.value = false
         }
     }
 
     fun setSearchQuery(value: String) {
         _searchQuery.value = value
+    }
+
+    fun onSearchSuccessful() {
+        _foundCity.value = false
     }
 }

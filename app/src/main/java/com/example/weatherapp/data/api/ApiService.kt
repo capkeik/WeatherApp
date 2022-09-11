@@ -21,12 +21,12 @@ object ApiService {
                 chain ->
             val originalRequest = chain.request()
             originalRequest.url.newBuilder()
-                .addQueryParameter(QUERY_KEY, API_KEY)
-                .build()
-                .let {
-                    chain.proceed(
-                        originalRequest.newBuilder().url(it).build()
-                    ) }
+                    .addQueryParameter(QUERY_KEY, API_KEY)
+                    .build()
+                    .let {
+                        chain.proceed(
+                            originalRequest.newBuilder().url(it).build()
+                        ) }
         }
 
     private val okHttpClient by lazy {
